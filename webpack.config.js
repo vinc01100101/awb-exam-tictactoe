@@ -1,6 +1,6 @@
 module.exports = {
   entry: {
-    gate: "./src/main.js"
+    main: "./src/main.js"
   },
   output: {
     path: __dirname + "/dist",
