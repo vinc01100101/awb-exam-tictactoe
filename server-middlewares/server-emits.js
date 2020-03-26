@@ -6,6 +6,7 @@ module.exports = io => {
     users[id] = {
       room: null,
       players: [],
+      timers: [],
       cellState: [],
       turns: 0,
       done: true
@@ -21,13 +22,37 @@ module.exports = io => {
       console.log("game initialized!");
       switch (data.mode) {
         case "single":
-          user.cellState = ["x", "", "", "", "x", "", "", "", "o"];
+          user.cellState = [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ];
           user.players = data.players;
           user.done = false;
           socket.emit("render", user);
           break;
         case "remote":
           break;
+      }
+    });
+
+    socket.on("turn", data => {
+      //if remote match
+      if (user.room) {
+        //remote match logic
+      } else {
+        //update cell with user token if null
+        if (user.cellState[data] == null) {
+          user.cellState[data] = user.turns % 2;
+          user.turns++; //increase turns
+          socket.emit("render", user);
+        }
       }
     });
 

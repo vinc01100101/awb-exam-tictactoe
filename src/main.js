@@ -151,12 +151,29 @@ function SingleInterface(props) {
 }
 
 function GameOn(props) {
+  const width = props.canvasSize.width,
+    height = props.canvasSize.height;
+  const cellWidth = width / 3,
+    cellHeight = height / 3;
+
+  function handleClick(e) {
+    const left = e.nativeEvent.offsetX,
+      top = e.nativeEvent.offsetY;
+    console.log("is integer? " + (top % cellHeight) + " " + (left % cellWidth));
+    console.log("top: " + top + " left: " + left);
+    if (top != -1 && left != -1) {
+      const x = Math.floor(left / cellWidth) - (left % cellWidth == 0 ? 1 : 0);
+      const y = Math.floor(top / cellHeight) - (top % cellHeight == 0 ? 1 : 0);
+
+      const cell = x + y * 3;
+      socket.emit("turn", cell);
+      console.log(cell);
+    }
+  }
+
   return (
     <div>
-      <canvas
-        width={props.canvasSize.width}
-        height={props.canvasSize.height}
-      ></canvas>
+      <canvas width={width} height={height} onClick={handleClick}></canvas>
       <button>Leave</button>
     </div>
   );

@@ -45,9 +45,9 @@ module.exports = (state, setState, socket) => {
       ctx.stroke(); // Draw it
 
       //if cell has token
-      if (x) {
+      if (x != null) {
         ctx.lineWidth = 10; //token line width
-        if (x == "x") {
+        if (x == 0) {
           ctx.beginPath();
           ctx.moveTo(left + margin, top + margin);
           ctx.lineTo(left + cellWidth - margin, top + cellHeight - margin);
@@ -56,7 +56,7 @@ module.exports = (state, setState, socket) => {
           ctx.strokeStyle = "white";
           ctx.stroke();
         }
-        if (x == "o") {
+        if (x == 1) {
           ctx.beginPath();
           ctx.arc(
             left + cellWidth / 2,
