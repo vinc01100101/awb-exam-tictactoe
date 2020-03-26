@@ -1,6 +1,7 @@
 const React = require("react");
 const ReactDOM = require("react-dom");
-
+const socket = io();
+const clientEmitsListener = require("./client-emitslistener");
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -8,34 +9,57 @@ class App extends React.Component {
       //visibility toggles
       showSingleInterface: false,
       showRemoteMatch: false,
+      showGameOn: false,
       //text inputs
       textPlayer1: "",
-      textPlayer2: ""
+      textPlayer2: "",
+      //updates
+      connectedClients: 0,
+      canvasSize: {
+        width: 270,
+        height: 270
+      }
     };
     this.setStateCallback = this.setStateCallback.bind(this);
   }
-
+  componentDidMount() {
+    clientEmitsListener(this.state.canvasSize, this.setStateCallback, socket);
+  }
   //abstract callback
-  setStateCallback(prop, val) {
-    this.setState({
-      [prop]: val
+  setStateCallback(state) {
+    return new Promise((resolve, reject) => {
+      this.setState(state, resolve());
     });
+  }
+  //emitter
+  emitter(emitName, data) {
+    socket.emit(emitName, data);
   }
   render() {
     return (
       <div>
         <h1>ticTacToe!</h1>
-        {!this.state.showRemoteMatch && !this.state.showSingleInterface && (
-          <Welcome setState={this.setStateCallback} />
-        )}
+        <p>Online clients: {this.state.connectedClients}</p>
 
+        {/* Welcome component */}
+        {!this.state.showRemoteMatch &&
+          !this.state.showSingleInterface &&
+          !this.state.showGameOn && (
+            <Welcome setState={this.setStateCallback} />
+          )}
+
+        {/* SingleInterface component */}
         {this.state.showSingleInterface && (
           <SingleInterface
             setState={this.setStateCallback}
             textPlayer1={this.state.textPlayer1}
             textPlayer2={this.state.textPlayer2}
+            emitter={this.emitter}
           />
         )}
+
+        {/* GameOn component */}
+        {this.state.showGameOn && <GameOn canvasSize={this.state.canvasSize} />}
       </div>
     );
   }
@@ -48,7 +72,7 @@ function Welcome(props) {
         <h4>Game Mode</h4>
         <button
           onClick={() => {
-            props.setState("showSingleInterface", true);
+            props.setState({ showSingleInterface: true });
           }}
         >
           Single Interface Match
@@ -70,8 +94,22 @@ function SingleInterface(props) {
   function checkInput(e) {
     const val = e.target.value;
     const regex = /^(\w?)+$/;
-    regex.test(val) && props.setState(e.target.id, val);
+    regex.test(val) && props.setState({ [e.target.id]: val });
   }
+  function startGame() {
+    const textPlayer1 = props.textPlayer1,
+      textPlayer2 = props.textPlayer2;
+
+    if (textPlayer1.length >= 4 && textPlayer2.length >= 4) {
+      props.emitter("game init", {
+        mode: "single",
+        players: [textPlayer1, textPlayer2]
+      });
+    } else {
+      alert("Player names must contain at least 4 characters.");
+    }
+  }
+
   return (
     <div className="popup-background">
       <div className="popup-foreground">
@@ -79,7 +117,7 @@ function SingleInterface(props) {
         <div>
           4-16 letters and/or numbers,
           <br />
-          no spaces no special chr.
+          <u>no spaces no special chr.</u>
         </div>
         <input
           type="text"
@@ -99,15 +137,27 @@ function SingleInterface(props) {
           value={props.textPlayer2}
           required
         />
-        <button>Start Game!</button>
+        <button onClick={startGame}>Start Game!</button>
         <button
           onClick={() => {
-            props.setState("showSingleInterface", false);
+            props.setState({ showSingleInterface: false });
           }}
         >
           Back
         </button>
       </div>
+    </div>
+  );
+}
+
+function GameOn(props) {
+  return (
+    <div>
+      <canvas
+        width={props.canvasSize.width}
+        height={props.canvasSize.height}
+      ></canvas>
+      <button>Leave</button>
     </div>
   );
 }

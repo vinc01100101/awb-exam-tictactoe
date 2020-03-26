@@ -1,6 +1,10 @@
 body {
   background-color: rgb(37, 37, 37);
   color: antiquewhite;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   /*for removing text highlighting*/
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
@@ -10,7 +14,9 @@ body {
   user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Opera and Firefox */
 }
-
+canvas {
+  background-color: black;
+}
 .popup-background {
   background-color: rgb(0, 0, 0, 0.4);
   position: fixed;

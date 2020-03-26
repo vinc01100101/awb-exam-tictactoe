@@ -1,15 +1,22 @@
 const express = require("express");
 const app = express();
+const http = require("http").Server(app);
+const io = require("socket.io")(http);
+
 const mongoose = require("mongoose");
-const connEvents = require("./connection-listeners");
 const colors = require("colors");
 require("dotenv").config();
+
+const connEvents = require("./server-middlewares/connection-listeners");
+const serverEmits = require("./server-middlewares/server-emits");
+const ROUTES_requestLogger = require("./server-middlewares/logger");
 
 connEvents(mongoose, colors); //just db connection listeners
 
 //middlewares
 
 app.use(express.static(__dirname + "/dist", { index: false }));
+app.use("/", ROUTES_requestLogger);
 app.set("view engine", "pug");
 
 const dbURI = process.env.db;
@@ -21,12 +28,15 @@ try {
     (err, db) => {
       if (err) throw "Database Error";
 
+      //start listening to client emits
+      serverEmits(io);
+
       app.get("/", (req, res) => {
         res.render(__dirname + "/dist/index.pug");
       });
 
       const port = process.env.PORT || 8080;
-      app.listen(port, () => {
+      http.listen(port, () => {
         console.log("Listening to port: " + port);
       });
     }
