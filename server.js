@@ -19,7 +19,7 @@ app.use(express.static(__dirname + "/dist", { index: false }));
 app.use("/", ROUTES_requestLogger);
 app.set("view engine", "pug");
 
-const dbURI = process.env.db;
+const dbURI = process.env.DB;
 
 try {
   mongoose.connect(

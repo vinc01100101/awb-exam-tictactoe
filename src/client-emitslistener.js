@@ -6,10 +6,28 @@ module.exports = (state, setState, socket) => {
   });
 
   socket.on("render", data => {
+    const styles = [{}, {}],
+      index = data.turns % 2;
+    //active
+    styles[index] = {
+      fontSize: "50px",
+      color: "rgb(29, 202, 23)",
+      zIndex: 1
+    };
+    //waiting
+    styles[1 - index] = {
+      fontSize: "20px",
+      color: "white",
+      zIndex: 0
+    };
+
+    //setState
     setState({
       showGameOn: true,
       showRemoteMatch: false,
-      showSingleInterface: false
+      showSingleInterface: false,
+      players: data.players,
+      styles
     }).then(() => {
       renderTikitakitoe(data);
     });

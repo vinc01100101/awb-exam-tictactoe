@@ -32,7 +32,7 @@ canvas {
 .popup-foreground {
   width: 250px;
   height: 270px;
-  background-color: rgb(83, 83, 83);
+  background-color: rgb(27, 27, 27);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -49,4 +49,25 @@ canvas {
 .popup-foreground input[type="text"] {
   text-align: center;
   margin: 10px;
+}
+#GameOn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#playerNames {
+  width: 300px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+#player0,
+#player1 {
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    1px 1px 0 #000;
+  width: 50%;
+  font-size: 20px;
+  transition: all 0.5s;
 }

@@ -47,7 +47,7 @@ module.exports = io => {
       if (user.room) {
         //remote match logic
       } else {
-        //update cell with user token if null
+        //update cell with user token if cell is null
         if (user.cellState[data] == null) {
           user.cellState[data] = user.turns % 2;
           user.turns++; //increase turns

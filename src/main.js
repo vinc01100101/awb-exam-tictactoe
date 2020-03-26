@@ -18,7 +18,9 @@ class App extends React.Component {
       canvasSize: {
         width: 270,
         height: 270
-      }
+      },
+      players: [],
+      styles: []
     };
     this.setStateCallback = this.setStateCallback.bind(this);
   }
@@ -59,7 +61,13 @@ class App extends React.Component {
         )}
 
         {/* GameOn component */}
-        {this.state.showGameOn && <GameOn canvasSize={this.state.canvasSize} />}
+        {this.state.showGameOn && (
+          <GameOn
+            canvasSize={this.state.canvasSize}
+            players={this.state.players}
+            styles={this.state.styles}
+          />
+        )}
       </div>
     );
   }
@@ -100,13 +108,18 @@ function SingleInterface(props) {
     const textPlayer1 = props.textPlayer1,
       textPlayer2 = props.textPlayer2;
 
-    if (textPlayer1.length >= 4 && textPlayer2.length >= 4) {
+    if (
+      textPlayer1.length >= 4 &&
+      textPlayer2.length >= 4 &&
+      textPlayer1.length <= 14 &&
+      textPlayer2.length <= 14
+    ) {
       props.emitter("game init", {
         mode: "single",
         players: [textPlayer1, textPlayer2]
       });
     } else {
-      alert("Player names must contain at least 4 characters.");
+      alert("Player names must contain at least 4 alphanumeric characters.");
     }
   }
 
@@ -115,14 +128,14 @@ function SingleInterface(props) {
       <div className="popup-foreground">
         <h4>Player Names</h4>
         <div>
-          4-16 letters and/or numbers,
+          4-14 letters and/or numbers,
           <br />
           <u>no spaces no special chr.</u>
         </div>
         <input
           type="text"
           placeholder="Player 1"
-          maxLength="16"
+          maxLength="14"
           id="textPlayer1"
           onChange={checkInput}
           value={props.textPlayer1}
@@ -131,7 +144,7 @@ function SingleInterface(props) {
         <input
           type="text"
           placeholder="Player 2"
-          maxLength="16"
+          maxLength="14"
           id="textPlayer2"
           onChange={checkInput}
           value={props.textPlayer2}
@@ -157,10 +170,13 @@ function GameOn(props) {
     cellHeight = height / 3;
 
   function handleClick(e) {
+    //get user click position
     const left = e.nativeEvent.offsetX,
       top = e.nativeEvent.offsetY;
     console.log("is integer? " + (top % cellHeight) + " " + (left % cellWidth));
     console.log("top: " + top + " left: " + left);
+    //i dont know why clicking on the edge of the canvas returns -1 instead of 0
+    //we need to handle that to prevent bugs
     if (top != -1 && left != -1) {
       const x = Math.floor(left / cellWidth) - (left % cellWidth == 0 ? 1 : 0);
       const y = Math.floor(top / cellHeight) - (top % cellHeight == 0 ? 1 : 0);
@@ -172,8 +188,18 @@ function GameOn(props) {
   }
 
   return (
-    <div>
+    <div id="GameOn">
       <canvas width={width} height={height} onClick={handleClick}></canvas>
+      <div id="playerNames">
+        {/* referencing id number as index, we use 0 and 1 */}
+
+        <p id="player0" style={props.styles[0]}>
+          {props.players[0]}
+        </p>
+        <p id="player1" style={props.styles[1]}>
+          {props.players[1]}
+        </p>
+      </div>
       <button>Leave</button>
     </div>
   );
