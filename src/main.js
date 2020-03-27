@@ -7,7 +7,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       //visibility toggles
-      showSingleInterface: false,
+      showSharedInterface: false,
       showRemoteMatch: false,
       showGameOn: false,
       //text inputs
@@ -46,14 +46,14 @@ class App extends React.Component {
 
         {/* Welcome component */}
         {!this.state.showRemoteMatch &&
-          !this.state.showSingleInterface &&
+          !this.state.showSharedInterface &&
           !this.state.showGameOn && (
             <Welcome setState={this.setStateCallback} />
           )}
 
-        {/* SingleInterface component */}
-        {this.state.showSingleInterface && (
-          <SingleInterface
+        {/* SharedInterface component */}
+        {this.state.showSharedInterface && (
+          <SharedInterface
             setState={this.setStateCallback}
             textPlayer1={this.state.textPlayer1}
             textPlayer2={this.state.textPlayer2}
@@ -82,10 +82,10 @@ function Welcome(props) {
         <h4>Game Mode</h4>
         <button
           onClick={() => {
-            props.setState({ showSingleInterface: true });
+            props.setState({ showSharedInterface: true });
           }}
         >
-          Single Interface Match
+          Shared Interface Match
         </button>
         <button>
           Remote Match
@@ -101,7 +101,7 @@ function Welcome(props) {
   );
 }
 
-function SingleInterface(props) {
+function SharedInterface(props) {
   //verify if user input is valid
   function checkInput(e) {
     const val = e.target.value;
@@ -119,7 +119,7 @@ function SingleInterface(props) {
       textPlayer2.length <= 14
     ) {
       props.emitter("game init", {
-        mode: "single",
+        mode: "shared",
         players: [textPlayer1, textPlayer2]
       });
     } else {
@@ -157,7 +157,7 @@ function SingleInterface(props) {
         <button onClick={startGame}>Start Game!</button>
         <button
           onClick={() => {
-            props.setState({ showSingleInterface: false });
+            props.setState({ showSharedInterface: false });
           }}
         >
           Back

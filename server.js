@@ -54,7 +54,7 @@ mongoose.connect(
       }
     }
     //check collection in database, create one if none found
-    checkCollection("single");
+    checkCollection("shared");
     checkCollection("remote");
 
     //start listening to client emits

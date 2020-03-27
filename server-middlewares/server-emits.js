@@ -22,7 +22,7 @@ module.exports = (scoresModel, io) => {
     socket.on("game init", data => {
       console.log("game initialized!");
       switch (data.mode) {
-        case "single":
+        case "shared":
           user.players = data.players;
           socket.emit("render", user);
 
@@ -42,7 +42,7 @@ module.exports = (scoresModel, io) => {
       if (user.room) {
         //remote match logic
       } else {
-        //else if single interface
+        //else if shared interface
         //update cell with user token -> if(cell is null && no winner yet)
         if (
           user.cellState[data] == null &&
@@ -127,7 +127,7 @@ module.exports = (scoresModel, io) => {
             (10 - Math.ceil(user.turns / 2)) /
             (user.timers[user.turns % 2] || 1);
           //search in database
-          scoresModel.findOne({ mode: "single" }, (err, doc) => {
+          scoresModel.findOne({ mode: "shared" }, (err, doc) => {
             if (err) {
               console.log(err);
               return reject(err);

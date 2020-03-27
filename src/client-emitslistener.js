@@ -25,7 +25,7 @@ module.exports = (state, setState, socket) => {
     setState({
       showGameOn: true,
       showRemoteMatch: false,
-      showSingleInterface: false,
+      showSharedInterface: false,
       players: data.players,
       styles
     }).then(() => {
