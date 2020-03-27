@@ -116,14 +116,17 @@ function SharedInterface(props) {
       textPlayer1.length >= 4 &&
       textPlayer2.length >= 4 &&
       textPlayer1.length <= 14 &&
-      textPlayer2.length <= 14
+      textPlayer2.length <= 14 &&
+      textPlayer1 != textPlayer2
     ) {
       props.emitter("game init", {
         mode: "shared",
         players: [textPlayer1, textPlayer2]
       });
     } else {
-      alert("Player names must contain at least 4 alphanumeric characters.");
+      alert(
+        "Player names must contain at least \n4 alphanumeric characters. \nAnd must not be the same."
+      );
     }
   }
 
@@ -143,7 +146,7 @@ function SharedInterface(props) {
           id="textPlayer1"
           onChange={checkInput}
           value={props.textPlayer1}
-          required
+          autoComplete="off"
         />
         <input
           type="text"
@@ -152,7 +155,7 @@ function SharedInterface(props) {
           id="textPlayer2"
           onChange={checkInput}
           value={props.textPlayer2}
-          required
+          autoComplete="off"
         />
         <button onClick={startGame}>Start Game!</button>
         <button

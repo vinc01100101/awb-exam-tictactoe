@@ -21,19 +21,19 @@ module.exports = (scoresModel, io) => {
     //requested game intialization
     socket.on("game init", data => {
       console.log("game initialized!");
-      switch (data.mode) {
-        case "shared":
-          user.players = data.players;
-          socket.emit("render", user);
-
-          turnTimer = setInterval(() => {
-            user.timers[0]++;
-            socket.emit("timers", user.timers);
-          }, 1000);
-
-          break;
-        case "remote":
-          break;
+      if (!turnTimer) {
+        switch (data.mode) {
+          case "shared":
+            user.players = data.players;
+            socket.emit("render", user);
+            turnTimer = setInterval(() => {
+              user.timers[0]++;
+              socket.emit("timers", user.timers);
+            }, 1000);
+            break;
+          case "remote":
+            break;
+        }
       }
     });
 
