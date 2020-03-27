@@ -73,6 +73,8 @@ mongoose.connect(
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Ranking</title>
+          <body>
+          <h2>${mode} interface match top 50</h2>
           <ol>${data.ranking
             .map(x => {
               return `<li>${x.name}: ${x.score}</li>`;
