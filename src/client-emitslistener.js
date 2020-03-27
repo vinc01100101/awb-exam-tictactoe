@@ -9,15 +9,15 @@ module.exports = (state, setState, socket) => {
     const styles = [{}, {}],
       index = data.turns % 2;
     //active
-    styles[index] = {
+    styles[data.winner != null ? data.winner[0] : index] = {
       fontSize: "50px",
       color: "rgb(29, 202, 23)",
       zIndex: 1
     };
     //waiting
-    styles[1 - index] = {
+    styles[data.winner != null ? 1 - data.winner[0] : 1 - index] = {
       fontSize: "20px",
-      color: "white",
+      color: "rgba(255, 255, 255, 0.4)",
       zIndex: 0
     };
 
@@ -30,6 +30,17 @@ module.exports = (state, setState, socket) => {
       styles
     }).then(() => {
       renderTikitakitoe(data);
+      //check for winner
+      if (data.winner != null) {
+        document.querySelector(
+          "#player" + data.winner[0]
+        ).innerHTML = `<span style="color: rgb(58, 240, 231)">${
+          data.players[data.winner[0]]
+        } wins!<br>${data.winner[1].style}<br>style!!</span>`;
+      } else if (data.turns >= 9) {
+        document.querySelector("#player" + (data.turns % 2)).innerHTML += `
+        <br><br><span style="color: rgb(58, 240, 231)">Draw</span>`;
+      }
     });
   });
 
@@ -65,15 +76,20 @@ module.exports = (state, setState, socket) => {
       //if cell has token
       if (x != null) {
         ctx.lineWidth = 10; //token line width
+        //if token is "X"
         if (x == 0) {
           ctx.beginPath();
           ctx.moveTo(left + margin, top + margin);
           ctx.lineTo(left + cellWidth - margin, top + cellHeight - margin);
           ctx.moveTo(left + cellWidth - margin, top + margin);
           ctx.lineTo(left + margin, top + cellHeight - margin);
-          ctx.strokeStyle = "white";
+          ctx.strokeStyle =
+            data.winner && data.winner[1].stroke.indexOf(i) != -1
+              ? "green"
+              : "white";
           ctx.stroke();
         }
+        //if token is "O"
         if (x == 1) {
           ctx.beginPath();
           ctx.arc(
@@ -83,10 +99,19 @@ module.exports = (state, setState, socket) => {
             0,
             2 * Math.PI
           );
-          ctx.strokeStyle = "white";
+          ctx.strokeStyle =
+            data.winner && data.winner[1].stroke.indexOf(i) != -1
+              ? "green"
+              : "white";
           ctx.stroke();
         }
       }
     });
   }
+
+  socket.on("timers", timers => {
+    setState({
+      timers
+    });
+  });
 };

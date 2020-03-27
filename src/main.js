@@ -20,6 +20,7 @@ class App extends React.Component {
         height: 270
       },
       players: [],
+      timers: [0, 0],
       styles: []
     };
     this.setStateCallback = this.setStateCallback.bind(this);
@@ -66,6 +67,7 @@ class App extends React.Component {
             canvasSize={this.state.canvasSize}
             players={this.state.players}
             styles={this.state.styles}
+            timers={this.state.timers}
           />
         )}
       </div>
@@ -90,6 +92,8 @@ function Welcome(props) {
           <br />
           <span style={{ fontSize: "12px", fontWeight: "300" }}>
             (separate browsers or desktops)
+            <br />
+            (will implement upon request)
           </span>
         </button>
       </div>
@@ -189,18 +193,19 @@ function GameOn(props) {
 
   return (
     <div id="GameOn">
-      <canvas width={width} height={height} onClick={handleClick}></canvas>
       <div id="playerNames">
         {/* referencing id number as index, we use 0 and 1 */}
-
         <p id="player0" style={props.styles[0]}>
-          {props.players[0]}
+          {props.players[0] + " [" + props.timers[0] + "]"}
         </p>
         <p id="player1" style={props.styles[1]}>
-          {props.players[1]}
+          {props.players[1] + " [" + props.timers[1] + "]"}
         </p>
       </div>
-      <button>Leave</button>
+
+      <canvas width={width} height={height} onClick={handleClick}></canvas>
+
+      {/* <button>Leave</button> */}
     </div>
   );
 }
