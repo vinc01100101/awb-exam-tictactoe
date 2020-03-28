@@ -54,24 +54,38 @@ module.exports = (scoresModel, io) => {
           user.cellState[data] = user.turns % 2;
           const winStroke = checkWinner();
           //if found a winner, make a promise to handle that!!
-          handleWinner(winStroke).then(data => {
-            console.log("DATA FROM PROMISE: " + data);
-            console.log("Increasing turns..");
-            /* increasing turns without a Promise in database call
+          recursiveSaving();
+          //this function is hoisted
+          function recursiveSaving() {
+            handleWinner(winStroke)
+              .then(data => {
+                console.log("DATA FROM PROMISE: " + data);
+                console.log("Increasing turns..");
+                /* increasing turns without a Promise in database call
             will change the user.turns before we even get the result from DB,
             and db result is associated with user.turns,
             which makes it crucial so we made a Promise */
-            user.turns++;
-            socket.emit("render", user);
+                user.turns++;
+                socket.emit("render", user);
 
-            turnTimer =
-              !winStroke &&
-              user.turns < 9 &&
-              setInterval(() => {
-                user.timers[user.turns % 2]++;
-                socket.emit("timers", user.timers);
-              }, 1000);
-          });
+                turnTimer =
+                  !winStroke &&
+                  user.turns < 9 &&
+                  setInterval(() => {
+                    user.timers[user.turns % 2]++;
+                    socket.emit("timers", user.timers);
+                  }, 1000);
+              })
+              .catch(e => {
+                console.log("REJECTED PROMISE: " + e);
+                const reg = /^VersionError/;
+
+                if (reg.test(e)) {
+                  console.log("Retrying to save..");
+                  recursiveSaving();
+                }
+              });
+          }
         }
       }
     });
