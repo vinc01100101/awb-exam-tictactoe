@@ -57,13 +57,13 @@ module.exports = (scoresModel, io) => {
           recursiveSaving();
           //this function is hoisted
           function recursiveSaving() {
-            handleWinner(winStroke)
+            handleWinner(winStroke) //promise
               .then(data => {
                 console.log("DATA FROM PROMISE: " + data);
                 console.log("Increasing turns..");
                 /* increasing turns without a Promise in database call
             will change the user.turns before we even get the result from DB,
-            and db result is associated with user.turns,
+            db result is associated with user.turns,
             which makes it crucial so we made a Promise */
                 user.turns++;
                 socket.emit("render", user);
@@ -78,6 +78,9 @@ module.exports = (scoresModel, io) => {
               })
               .catch(e => {
                 console.log("REJECTED PROMISE: " + e);
+                /*if the error is version control, 
+                that means the current data is being modified
+                by the other user, thus, we will retry to save. */
                 const reg = /^VersionError/;
 
                 if (reg.test(e)) {
@@ -89,6 +92,7 @@ module.exports = (scoresModel, io) => {
         }
       }
     });
+    //check for winning patterns
     function checkWinner() {
       return user.cellState.reduce((x, y, i) => {
         return (
@@ -124,7 +128,7 @@ module.exports = (scoresModel, io) => {
                 }))) ||
           x //return x or current value if none of the above is true
         );
-      }, null);
+      }, null); //reduce() begin with null
     }
 
     function handleWinner(winStroke) {
